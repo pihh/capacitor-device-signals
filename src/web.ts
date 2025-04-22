@@ -18,4 +18,11 @@ export class SignalTriangulationWeb extends WebPlugin implements SignalTriangula
   removeAllListeners(): Promise<void> {
     return Promise.resolve();
   }
+
+  startWifiRssiMonitor(): Promise<any> {
+    return Promise.resolve();
+  }
+stopWifiRssiMonitor(): Promise<any> {
+  return Promise.resolve();
+}
 }

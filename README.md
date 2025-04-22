@@ -15,7 +15,9 @@ npx cap sync
 
 * [`startScan()`](#startscan)
 * [`stopScan()`](#stopscan)
-* [`addListener('wifiScanResult' | 'bluetoothScanResult' | 'cellSignalResult' | 'sensorData', ...)`](#addlistenerwifiscanresult--bluetoothscanresult--cellsignalresult--sensordata-)
+* [`startWifiRssiMonitor()`](#startwifirssimonitor)
+* [`stopWifiRssiMonitor()`](#stopwifirssimonitor)
+* [`addListener('wifiScanResult' | 'bluetoothScanResult' | 'cellSignalResult' | 'sensorData' | 'wifiRssiUpdate', ...)`](#addlistenerwifiscanresult--bluetoothscanresult--cellsignalresult--sensordata--wifirssiupdate-)
 * [`removeAllListeners()`](#removealllisteners)
 
 </docgen-index>
@@ -41,16 +43,38 @@ stopScan() => Promise<void>
 --------------------
 
 
-### addListener('wifiScanResult' | 'bluetoothScanResult' | 'cellSignalResult' | 'sensorData', ...)
+### startWifiRssiMonitor()
 
 ```typescript
-addListener(eventName: 'wifiScanResult' | 'bluetoothScanResult' | 'cellSignalResult' | 'sensorData', listenerFunc: (data: any) => void) => Promise<void>
+startWifiRssiMonitor() => Promise<any>
 ```
 
-| Param              | Type                                                                                         |
-| ------------------ | -------------------------------------------------------------------------------------------- |
-| **`eventName`**    | <code>'wifiScanResult' \| 'bluetoothScanResult' \| 'cellSignalResult' \| 'sensorData'</code> |
-| **`listenerFunc`** | <code>(data: any) =&gt; void</code>                                                          |
+**Returns:** <code>Promise&lt;any&gt;</code>
+
+--------------------
+
+
+### stopWifiRssiMonitor()
+
+```typescript
+stopWifiRssiMonitor() => Promise<any>
+```
+
+**Returns:** <code>Promise&lt;any&gt;</code>
+
+--------------------
+
+
+### addListener('wifiScanResult' | 'bluetoothScanResult' | 'cellSignalResult' | 'sensorData' | 'wifiRssiUpdate', ...)
+
+```typescript
+addListener(eventName: 'wifiScanResult' | 'bluetoothScanResult' | 'cellSignalResult' | 'sensorData' | "wifiRssiUpdate", listenerFunc: (data: any) => void) => Promise<void>
+```
+
+| Param              | Type                                                                                                             |
+| ------------------ | ---------------------------------------------------------------------------------------------------------------- |
+| **`eventName`**    | <code>'wifiScanResult' \| 'bluetoothScanResult' \| 'cellSignalResult' \| 'sensorData' \| 'wifiRssiUpdate'</code> |
+| **`listenerFunc`** | <code>(data: any) =&gt; void</code>                                                                              |
 
 --------------------
 

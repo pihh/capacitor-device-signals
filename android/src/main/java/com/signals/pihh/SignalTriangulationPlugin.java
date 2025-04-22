@@ -139,6 +139,8 @@ public class SignalTriangulationPlugin extends Plugin implements SensorEventList
     private SensorManager sensorManager;
     private Sensor magnetometer, accelerometer, lightSensor;
     private Handler handler = new Handler(Looper.getMainLooper());
+    private Runnable wifiRssiRunnable;
+    private boolean wifiRssiActive = false;
 
     @Override
     public void load() {
@@ -289,4 +291,48 @@ public class SignalTriangulationPlugin extends Plugin implements SensorEventList
         stopSensors();
         call.resolve();
     }
+
+
+    @PluginMethod
+public void startWifiRssiMonitor(PluginCall call) {
+    if (wifiManager == null) {
+        call.reject("WifiManager not initialized.");
+        return;
+    }
+
+    if (wifiRssiActive) {
+        call.resolve(); // already running
+        return;
+    }
+
+    wifiRssiActive = true;
+
+    wifiRssiRunnable = new Runnable() {
+        @Override
+        public void run() {
+            if (!wifiRssiActive) return;
+
+            int rssi = wifiManager.getConnectionInfo().getRssi();
+
+            JSObject rssiData = new JSObject();
+            rssiData.put("rssi", rssi);
+            rssiData.put("timestamp", System.currentTimeMillis());
+
+            notifyListeners("wifiRssiUpdate", rssiData);
+
+            handler.postDelayed(this, 1000); // repeat every 1 second
+        }
+    };
+
+    handler.post(wifiRssiRunnable);
+    call.resolve();
+}
+
+
+@PluginMethod
+public void stopWifiRssiMonitor(PluginCall call) {
+    wifiRssiActive = false;
+    handler.removeCallbacks(wifiRssiRunnable);
+    call.resolve();
+}
 }
