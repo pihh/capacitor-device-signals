@@ -46,10 +46,10 @@ stopScan() => Promise<void>
 ### startWifiRssiMonitor()
 
 ```typescript
-startWifiRssiMonitor() => Promise<any>
+startWifiRssiMonitor() => Promise<{ rssi: number; timestamp: number; }>
 ```
 
-**Returns:** <code>Promise&lt;any&gt;</code>
+**Returns:** <code>Promise&lt;{ rssi: number; timestamp: number; }&gt;</code>
 
 --------------------
 
@@ -57,10 +57,8 @@ startWifiRssiMonitor() => Promise<any>
 ### stopWifiRssiMonitor()
 
 ```typescript
-stopWifiRssiMonitor() => Promise<any>
+stopWifiRssiMonitor() => Promise<void>
 ```
-
-**Returns:** <code>Promise&lt;any&gt;</code>
 
 --------------------
 
@@ -68,7 +66,7 @@ stopWifiRssiMonitor() => Promise<any>
 ### addListener('wifiScanResult' | 'bluetoothScanResult' | 'cellSignalResult' | 'sensorData' | 'wifiRssiUpdate', ...)
 
 ```typescript
-addListener(eventName: 'wifiScanResult' | 'bluetoothScanResult' | 'cellSignalResult' | 'sensorData' | "wifiRssiUpdate", listenerFunc: (data: any) => void) => Promise<void>
+addListener(eventName: 'wifiScanResult' | 'bluetoothScanResult' | 'cellSignalResult' | 'sensorData' | 'wifiRssiUpdate', listenerFunc: (data: any) => void) => Promise<void>
 ```
 
 | Param              | Type                                                                                                             |

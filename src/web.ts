@@ -3,26 +3,31 @@ import { WebPlugin } from '@capacitor/core';
 import type { SignalTriangulationPlugin } from './definitions';
 
 export class SignalTriangulationWeb extends WebPlugin implements SignalTriangulationPlugin {
-  startScan(): Promise<void> {
-    throw new Error('startScan() not supported on web.');
+  async startScan(): Promise<void> {
+    throw this.unsupportedFeature('startScan');
   }
 
-  stopScan(): Promise<void> {
-    throw new Error('stopScan() not supported on web.');
+  async stopScan(): Promise<void> {
+    throw this.unsupportedFeature('stopScan');
+  }
+
+  async startWifiRssiMonitor(): Promise<{ rssi: number; timestamp: number }> {
+    throw this.unsupportedFeature('startWifiRssiMonitor');
+  }
+
+  async stopWifiRssiMonitor(): Promise<void> {
+    throw this.unsupportedFeature('stopWifiRssiMonitor');
   }
 
   addListener(): any {
-    throw new Error('addListener() not supported on web.');
+    throw this.unsupportedFeature('addListener');
   }
 
   removeAllListeners(): Promise<void> {
     return Promise.resolve();
   }
 
-  startWifiRssiMonitor(): Promise<any> {
-    return Promise.resolve();
+  private unsupportedFeature(method: string): Error {
+    return new Error(`${method} is not supported on web.`);
   }
-stopWifiRssiMonitor(): Promise<any> {
-  return Promise.resolve();
-}
 }
