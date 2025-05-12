@@ -7,14 +7,14 @@ import android.bluetooth.le.BluetoothLeScanner;
 import android.bluetooth.le.ScanCallback;
 import android.bluetooth.le.ScanResult;
 import android.content.Context;
-import android.net.wifi.WifiManager;
-import android.telephony.CellInfo;
-import android.telephony.CellSignalStrength;
-import android.telephony.TelephonyManager;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
+import android.net.wifi.WifiManager;
+import android.telephony.CellInfo;
+import android.telephony.CellSignalStrength;
+import android.telephony.TelephonyManager;
 
 import androidx.annotation.RequiresApi;
 import com.getcapacitor.JSObject;
@@ -50,6 +50,26 @@ public class SignalTriangulationPlugin extends Plugin implements SensorEventList
         bluetoothLeScanner = BluetoothAdapter.getDefaultAdapter().getBluetoothLeScanner();
         telephonyManager = (TelephonyManager) context.getSystemService(Context.TELEPHONY_SERVICE);
         sensorManager = (SensorManager) context.getSystemService(Context.SENSOR_SERVICE);
+        registerSensors();
+    }
+
+    private void registerSensors() {
+        if (sensorManager != null) {
+            registerSensor(Sensor.TYPE_ACCELEROMETER);
+            registerSensor(Sensor.TYPE_GYROSCOPE);
+            registerSensor(Sensor.TYPE_MAGNETIC_FIELD);
+            registerSensor(Sensor.TYPE_GRAVITY);
+            registerSensor(Sensor.TYPE_LIGHT);
+            registerSensor(Sensor.TYPE_AMBIENT_TEMPERATURE);
+            registerSensor(Sensor.TYPE_RELATIVE_HUMIDITY);
+        }
+    }
+
+    private void registerSensor(int sensorType) {
+        Sensor sensor = sensorManager.getDefaultSensor(sensorType);
+        if (sensor != null) {
+            sensorManager.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
     }
 
     @PluginMethod
@@ -59,6 +79,14 @@ public class SignalTriangulationPlugin extends Plugin implements SensorEventList
         } else {
             performScan(call);
         }
+    }
+
+    @PluginMethod
+    public void stopScan(PluginCall call) {
+        if (sensorManager != null) {
+            sensorManager.unregisterListener(this);
+        }
+        call.resolve();
     }
 
     @PermissionCallback
@@ -96,13 +124,6 @@ public class SignalTriangulationPlugin extends Plugin implements SensorEventList
                     btObj.put("rssi", result.getRssi());
                     notifyListeners("bluetoothSignalUpdate", btObj);
                 }
-
-                @Override
-                public void onScanFailed(int errorCode) {
-                    JSObject errorObj = new JSObject();
-                    errorObj.put("error", "Bluetooth scan failed: " + errorCode);
-                    notifyListeners("bluetoothScanError", errorObj);
-                }
             });
         }
     }
@@ -119,37 +140,68 @@ public class SignalTriangulationPlugin extends Plugin implements SensorEventList
         }
     }
 
-    @PluginMethod
-public void stopScan(PluginCall call) {
-    // Stop Bluetooth Scan
-    if (bluetoothLeScanner != null) {
-        bluetoothLeScanner.stopScan(new ScanCallback() {
-            @Override
-            public void onScanResult(int callbackType, ScanResult result) {}
-
-            @Override
-            public void onScanFailed(int errorCode) {}
-        });
+    @Override
+    public void onSensorChanged(SensorEvent event) {
+        JSObject sensorObj = new JSObject();
+        sensorObj.put("type", event.sensor.getType());
+        sensorObj.put("values", event.values);
+        notifyListeners("sensorUpdate", sensorObj);
     }
 
-    // Resolve the call
+    @Override
+    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+
+
+    @PluginMethod
+public void startAccelerometerMonitor(PluginCall call) {
+    Sensor accelerometer = sensorManager.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+    sensorManager.registerListener(this, accelerometer, SensorManager.SENSOR_DELAY_NORMAL);
     call.resolve();
 }
 
 @PluginMethod
-public void startWifiRssiMonitor(PluginCall call) {
-    if (wifiManager != null) {
-        JSObject wifiObj = new JSObject();
-        wifiObj.put("rssi", wifiManager.getConnectionInfo().getRssi());
-        notifyListeners("wifiRssiUpdate", wifiObj);
-    }
+public void stopAccelerometerMonitor(PluginCall call) {
+    sensorManager.unregisterListener(this);
     call.resolve();
 }
 
+@PluginMethod
+public void startGyroscopeMonitor(PluginCall call) {
+    Sensor gyroscope = sensorManager.getDefaultSensor(Sensor.TYPE_GYROSCOPE);
+    sensorManager.registerListener(this, gyroscope, SensorManager.SENSOR_DELAY_NORMAL);
+    call.resolve();
+}
 
-    @Override
-    public void onSensorChanged(SensorEvent event) {}
+@PluginMethod
+public void stopGyroscopeMonitor(PluginCall call) {
+    sensorManager.unregisterListener(this);
+    call.resolve();
+}
 
-    @Override
-    public void onAccuracyChanged(Sensor sensor, int accuracy) {}
+@PluginMethod
+public void startMagnetometerMonitor(PluginCall call) {
+    Sensor magnetometer = sensorManager.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
+    sensorManager.registerListener(this, magnetometer, SensorManager.SENSOR_DELAY_NORMAL);
+    call.resolve();
+}
+
+@PluginMethod
+public void stopMagnetometerMonitor(PluginCall call) {
+    sensorManager.unregisterListener(this);
+    call.resolve();
+}
+
+@PluginMethod
+public void startGravityMonitor(PluginCall call) {
+    Sensor gravity = sensorManager.getDefaultSensor(Sensor.TYPE_GRAVITY);
+    sensorManager.registerListener(this, gravity, SensorManager.SENSOR_DELAY_NORMAL);
+    call.resolve();
+}
+
+@PluginMethod
+public void stopGravityMonitor(PluginCall call) {
+    sensorManager.unregisterListener(this);
+    call.resolve();
+}
+
 }
